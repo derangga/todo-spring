@@ -14,7 +14,7 @@ class TodoService(
 ) {
     private val logger by lazy { LoggerFactory.getLogger(AccountService::class.java) }
 
-    fun createTodo(userId: Long, req: TodoReq): Result<Unit> = runCatching {
+    fun createTodo(userId: Long, req: TodoReq): Result<Todo> = runCatching {
         repo.save(
             Todo(
                 userId = userId,
@@ -22,8 +22,6 @@ class TodoService(
                 description = req.description
             )
         )
-
-        Unit
     }.onFailure {
         logger.error("failed create todo: ${it.message}")
     }
@@ -33,9 +31,7 @@ class TodoService(
     }
 
     fun detailTodo(userId: Long, todoId: Long): Result<Todo> = runCatching {
-        val result = repo.findSingle(userId, todoId).orElseThrow { error("todo not found") }
-
-        result
+        repo.findSingle(userId, todoId).orElseThrow { error("todo not found") }
     }.onFailure {
         logger.error("failed get todo: ${it.message}")
     }
@@ -49,8 +45,6 @@ class TodoService(
         result.updatedAt = Instant.now()
 
         repo.save(result)
-
-        result
     }.onFailure {
         logger.error("failed update todo: ${it.message}")
     }

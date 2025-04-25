@@ -16,7 +16,7 @@ class AccountService(
 
     private val logger by lazy { LoggerFactory.getLogger(AccountService::class.java) }
 
-    fun register(req: RegisterReq): Result<Boolean> = runCatching {
+    fun register(req: RegisterReq): Result<User> = runCatching {
         require(repo.findByEmail(req.email) == null) { "email taken" }
 
         val user = User(
@@ -26,8 +26,6 @@ class AccountService(
         )
 
         repo.save(user)
-
-        true
     }.onFailure {
         logger.error("failed register user: ${it.message}")
     }
@@ -44,8 +42,7 @@ class AccountService(
     }
 
     fun getUserById(id: Long): Result<User> = runCatching {
-        val user = repo.findById(id).orElseThrow { error("Invalid user id") }
-        user
+        repo.findById(id).orElseThrow { error("Invalid user id") }
     }.onFailure {
         logger.error("failed get user: ${it.message}")
     }
