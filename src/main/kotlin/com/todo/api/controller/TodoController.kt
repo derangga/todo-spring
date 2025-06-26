@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/todo")
+@RequestMapping("/api/todos")
 class TodoController(
     private val svc: TodoService
 ) {
@@ -31,7 +31,7 @@ class TodoController(
     fun createTodo(auth: Authentication, @Valid @RequestBody req: TodoReq): ResponseEntity<*> {
         val result = svc.createTodo(auth.getUserId(), req)
         if (result.isFailure) {
-            ResponseBuilder.build(HttpStatus.UNPROCESSABLE_ENTITY, ErrorResponse(result.getExMessage()))
+            return ResponseBuilder.build(HttpStatus.UNPROCESSABLE_ENTITY, ErrorResponse(result.getExMessage()))
         }
 
         return ResponseBuilder.build(HttpStatus.CREATED, BaseResponse("todo created"))
